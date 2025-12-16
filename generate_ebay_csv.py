@@ -98,14 +98,14 @@ def generate_csv():
         row['*Duration'] = "GTC"
         row['*StartPrice'] = "4.49" # Based on screenshot
         row['*Quantity'] = "10"
-        row['*Location'] = "China" 
+        row['*Location'] = "United States" 
         row['*DispatchTimeMax'] = "3"
         row['*ReturnsAcceptedOption'] = "ReturnsNotAccepted"
         row['PicURL'] = pic_url
         
         # Shipping Details
         row['ShippingType'] = "Flat"
-        row['ShippingService-1:Option'] = "StandardInternational" # Common for China -> US
+        row['ShippingService-1:Option'] = "USPSFirstClass" # Standard US shipping
         row['ShippingService-1:Cost'] = "0" # Free shipping
         
         # Ordered values
