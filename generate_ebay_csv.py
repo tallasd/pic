@@ -3,7 +3,7 @@ import os
 from batch_process import raw_list, clean_name
 
 # Configuration
-TEMPLATE_FILE = r"d:\chromedownload\批量产图\eBay-category-listing-template-12月-15-2025-9-22-35.csv"
+TEMPLATE_FILE = r"d:\chromedownload\批量产图\eBay-category-listing-template-12月-16-2025-7-28-11.csv"
 OUTPUT_CSV = r"d:\chromedownload\批量产图\ebay_listings_generated.csv"
 SECOND_IMAGE_PATH_LOCAL = r"D:\chromedownload\批量产图\Gemini_Generated_Image_5sh1k65sh1k65sh1.png"
 OUTPUT_DIR = r"D:\chromedownload\批量产图\output"
