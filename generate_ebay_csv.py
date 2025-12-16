@@ -9,8 +9,8 @@ SECOND_IMAGE_PATH_LOCAL = r"D:\chromedownload\批量产图\Gemini_Generated_Imag
 OUTPUT_DIR = r"D:\chromedownload\批量产图\output"
 
 # GitHub Configuration (Replace with your actual details)
-GITHUB_USER = "YOUR_USERNAME"
-GITHUB_REPO = "YOUR_REPO_NAME"
+GITHUB_USER = "tallasd"
+GITHUB_REPO = "pic"
 GITHUB_BRANCH = "main"
 # Base URL for raw images
 GITHUB_BASE_URL = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/{GITHUB_BRANCH}"
