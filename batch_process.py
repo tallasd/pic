@@ -326,17 +326,83 @@ def download_image(name, slug):
     return None
 
 def process_batch():
-    lines = raw_list.strip().split('\n')
-    bg_file = "Gemini_Generated_Image_5lr6yq5lr6yq5lr6.png"
+    # Read names from pokemon_list.txt
+    list_file = r"d:\chromedownload\批量产图\pokemon_list.txt"
+    lines = []
+    
+    try:
+        with open(list_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+            # Extract Shiny section
+            if "【闪光宝可梦 (Shiny)】" in content:
+                shiny_part = content.split("【闪光宝可梦 (Shiny)】")[1]
+                if "【普通宝可梦 (Non-Shiny)】" in shiny_part:
+                    shiny_part = shiny_part.split("【普通宝可梦 (Non-Shiny)】")[0]
+                lines = shiny_part.strip().split('\n')
+            else:
+                print("Error: Could not find Shiny section in pokemon_list.txt")
+                return
+    except Exception as e:
+        print(f"Error reading pokemon_list.txt: {e}")
+        return
+
+    bg_file = "2kChatGPT Image 2025年12月17日 14_56_29.jpg"
     
     processed_count = 0
     unique_names = set()
     
+    # Chinese name to English slug mapping
+    # The CSV only has Chinese names (Species column).
+    # We need to translate Chinese names to English to find images on PokeAPI or similar.
+    # Since we don't have a local mapping, we can try to use a translation API or 
+    # use pypinyin to guess (bad idea) or 
+    # Use a public mapping file if available.
+    # Or query PokeAPI by ID? But we don't have ID in the txt file.
+    # But we have ID in the CSV ("Species" is name, "PID"? No. "Species" is just name).
+    # Wait, the first column "Position" has "0001". That looks like Dex ID!
+    # "main @ [01] (Box 1)-01: 0001 ★ - 妙蛙种子..."
+    # If we can match the Chinese name to the ID from the CSV, we can use the ID to get the image!
+    
+    # Let's build a Name -> ID map from the CSV
+    name_to_id = {}
+    csv_file = r"d:\chromedownload\批量产图\全部宝可梦数据excel含dlc.csv"
+    try:
+        import csv
+        with open(csv_file, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            headers = next(reader)
+            
+            # Find indices
+            nickname_idx = headers.index("Nickname")
+            species_idx = headers.index("Species")
+            position_idx = headers.index("Position")
+            
+            for row in reader:
+                if not row: continue
+                
+                # Name (Species is more reliable than Nickname)
+                name = row[species_idx]
+                
+                # Extract ID from Position column
+                # Format: "main @ ... : 0001 ★ ..."
+                # Regex to find the 4 digit number before ★ or just the number after ": "
+                # Example: "...: 0001 ★ ..."
+                pos_str = row[position_idx]
+                match = re.search(r':\s*(\d+)', pos_str)
+                if match:
+                    dex_id = int(match.group(1))
+                    name_to_id[name] = dex_id
+                    
+    except Exception as e:
+        print(f"Error reading CSV for ID mapping: {e}")
+        return
+
     for line in lines:
         if not line.strip():
             continue
             
-        clean = clean_name(line)
+        # Line format: "★ Name"
+        clean = line.replace("★", "").strip()
         
         # Deduplicate based on cleaned name
         if clean in unique_names:
@@ -344,28 +410,90 @@ def process_batch():
             continue
         unique_names.add(clean)
         
-        slug = get_slug(clean)
-        print(f"Processing: {clean} -> {slug}")
+        # Get ID
+        dex_id = name_to_id.get(clean)
         
-        img_path = download_image(clean, slug)
-        
-        if img_path:
-            # Output filename
-            safe_name = clean.replace(" ", "_").replace("'", "").replace(".", "")
-            out_file = f"output/output_{safe_name}.png"
+        if dex_id:
+            print(f"Processing: {clean} (ID: {dex_id})")
             
-            try:
-                # Call the composition function
-                # Note: The original name is passed for text rendering (e.g. "MR. MIME")
-                create_pokemon_card(bg_file, img_path, clean.upper(), out_file)
+            # Download by ID
+            # Slug is not strictly needed if we have ID for the image URL
+            # But we might need slug for file naming or other things?
+            # Let's use ID for filename to be safe, or just keep using name.
+            # download_image function currently takes (name, slug).
+            # We can modify it to take ID.
+            
+            img_path = download_image_by_id(clean, dex_id)
+            
+            if img_path:
+                output_path = f"output/output_{clean}.png"
+                
+                # Check if output already exists? (Optional)
+                # create_pokemon_card(bg_file, img_path, clean, output_path)
+                
+                # For this task, user wants "Pokemon Name" text on card.
+                # Do we use Chinese name or English name?
+                # The example had "AMOONGUSS" (English).
+                # If we only have Chinese name, we might need to translate it for the text on card?
+                # User said "宝可梦的名字和形象", didn't specify language.
+                # But the previous example was English.
+                # If the user provided a Chinese list, maybe they expect Chinese text?
+                # Or maybe they want English text but provided Chinese list?
+                # Given "AMOONGUSS" example was generated from "6IV Shiny Amoonguss" input.
+                # Now input is "七夕青鸟".
+                # If we print "七夕青鸟" on the card, is that okay?
+                # Font might not support Chinese?
+                # The font "ChakraPetch-BoldItalic.ttf" might NOT support Chinese.
+                # We should check if we need a Chinese font or translate to English.
+                # Let's try to get English name from API using ID.
+                
+                en_name = get_english_name(dex_id)
+                if not en_name:
+                    en_name = clean # Fallback to Chinese (might fail font)
+                
+                create_pokemon_card(bg_file, img_path, en_name, output_path)
+                
                 processed_count += 1
-            except Exception as e:
-                print(f"Error generating card for {clean}: {e}")
         else:
-            print(f"Skipping generation for {clean} due to missing image.")
-            
-        # Be nice to the server
-        time.sleep(0.5)
+            print(f"Warning: Could not find ID for {clean}")
+
+def download_image_by_id(name, dex_id):
+    # Construct Official Artwork URL (Transparent PNG)
+    # https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png
+    
+    url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{dex_id}.png"
+    filename = f"downloads/{dex_id}.png"
+    
+    if os.path.exists(filename):
+        return filename
+        
+    try:
+        print(f"Downloading {name} (ID: {dex_id})...")
+        r = requests.get(url, timeout=10)
+        if r.status_code == 200:
+            with open(filename, 'wb') as f:
+                f.write(r.content)
+            return filename
+        else:
+            print(f"Image not found for ID {dex_id}")
+    except Exception as e:
+        print(f"Error downloading {name}: {e}")
+    return None
+
+def get_english_name(dex_id):
+    # Fetch species info from PokeAPI to get English name
+    url = f"https://pokeapi.co/api/v2/pokemon-species/{dex_id}"
+    try:
+        r = requests.get(url, timeout=10)
+        if r.status_code == 200:
+            data = r.json()
+            # Find English name in names list
+            for entry in data['names']:
+                if entry['language']['name'] == 'en':
+                    return entry['name']
+    except Exception as e:
+        print(f"Error fetching English name for ID {dex_id}: {e}")
+    return None
 
 if __name__ == "__main__":
     process_batch()

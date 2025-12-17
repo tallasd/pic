@@ -69,9 +69,9 @@ def create_pokemon_card(bg_path, pokemon_path, pokemon_name, output_path):
     # Position: Center horizontally
     pos_x = (bg_w - target_w) // 2
     
-    # Position Vertically: Start at y=700 + centering offset
-    safe_top = 700
-    safe_bottom = 1750
+    # Position Vertically: Start at y=600 + centering offset (Moved up from 700, down from 500)
+    safe_top = 600
+    safe_bottom = 1650 # Shifted down by 100
     available_h = safe_bottom - safe_top
     
     # Center in the safe vertical band
@@ -120,7 +120,7 @@ def create_pokemon_card(bg_path, pokemon_path, pokemon_name, output_path):
     text_h = bbox[3] - bbox[1]
     
     text_x = (bg_w - text_w) // 2
-    text_y = 80 # Moved up from 150 to avoid blocking SHINY 6IV
+    text_y = 50 # Moved up from 80
     
     # Draw text with outline
     # User requested style: White text with Cyan outline (and maybe black outer glow)
