@@ -124,9 +124,9 @@ def process_item(cn_name, dex_id):
     sku_name = en_name_upper.replace(" ", "_").replace(".", "").replace("'", "")
     row["CustomLabel"] = f"ZA_6IV_NON_SHINY_{sku_name}"
     
-    # Title: 6IV [Name] Pokemon Legends Z-A ... (Removed "Shiny")
-    # Added "Non-Shiny" keyword to be clear
-    row["*Title"] = f"6IV {en_name_title} Pokemon Legends Z-A (Non-Shiny) Custom 6IV - FAST DELIVERY"
+    # Title: 6IV [Name] Legends ZA MEGA DIMENSION DLC (Legends Z-A) - CUSTOM OT
+    # Removed "Non-Shiny" as per user request
+    row["*Title"] = f"6IV {en_name_title} Legends ZA MEGA DIMENSION DLC (Legends Z-A) - CUSTOM OT"
     
     # PicURL: output_non_shiny/ENGLISH_NAME.png
     # My batch generation script saved files as UPPERCASE ENGLISH NAME.png
@@ -140,8 +140,9 @@ def process_item(cn_name, dex_id):
     img_url = f"{GITHUB_BASE_URL}{img_filename}"
     row["PicURL"] = f"{img_url}|{SECONDARY_IMAGE_URL}"
     
-    # Description (Updated to remove Shiny references)
-    desc = f"""<h1>{en_name_upper} 6IV (Non-Shiny) + FREE MASTERBALL GIFT</h1><p>Ensure to message me here on eBay your set preferences and your hours of availability so we can arrange the trade session!</p><h3>Before You Buy</h3><ul><li>You must have access to Nintendo Online Subscription</li></ul><h3>Contact information</h3><p>Please contact me via eBay messages or through discord: <strong>takemidelivery</strong></p><h3>How to trade in Pokémon Legends: Z-A</h3><ol><li>Go in-game, Press X, Select <strong>Link Play</strong></li><li>Select <strong>Link Trade</strong>, Select <strong>Faraway Players</strong></li><li>Enter the code we will provide.</li><li>Press &quot;+&quot; and select &quot;Begin Searching&quot;.</li><li>Trade me any pokémon and I will trade you what you have purchased!</li></ol><p><strong>Note:</strong> You are purchasing a digital product in the Pokémon Legends: Z-A game. Nothing physical will be delivered to you! Please understand this before purchasing.</p><hr><p>✅ 100% Legit for Battle &amp; Trade<br>✅ Customizable Moves, Nature, Ball, and More<br>✅ Fast &amp; Secure</p>"""
+    # Description (Updated to remove Shiny/Non-Shiny references)
+    # Match reference format: <h1>{Name} 6IV + FREE MASTERBALL GIFT</h1>
+    desc = f"""<h1>{en_name_upper} 6IV + FREE MASTERBALL GIFT</h1><p>Ensure to message me here on eBay your set preferences and your hours of availability so we can arrange the trade session!</p><h3>Before You Buy</h3><ul><li>You must have access to Nintendo Online Subscription</li></ul><h3>Contact information</h3><p>Please contact me via eBay messages or through discord: <strong>takemidelivery</strong></p><h3>How to trade in Pokémon Legends: Z-A</h3><ol><li>Go in-game, Press X, Select <strong>Link Play</strong></li><li>Select <strong>Link Trade</strong>, Select <strong>Faraway Players</strong></li><li>Enter the code we will provide.</li><li>Press &quot;+&quot; and select &quot;Begin Searching&quot;.</li><li>Trade me any pokémon and I will trade you what you have purchased!</li></ol><p><strong>Note:</strong> You are purchasing a digital product in the Pokémon Legends: Z-A game. Nothing physical will be delivered to you! Please understand this before purchasing.</p><hr><p>✅ 100% Legit for Battle &amp; Trade<br>✅ Customizable Moves, Nature, Ball, and More<br>✅ Fast &amp; Secure</p>"""
     row["*Description"] = desc
     
     # Fill static values
